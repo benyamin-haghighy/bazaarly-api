@@ -40,7 +40,7 @@ export class BookmarksService {
   async findAll(user: JwtPayload) {
     return this.bookmarkRepository.find({
       where: { user_id: user.sub },
-      relations: { product: true },
+      relations: { product: true, user:true },
       order: { id: 'DESC' },
     })
   }

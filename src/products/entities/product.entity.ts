@@ -1,6 +1,8 @@
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Category } from "../../category/entities/category.entity";
 import { Bookmark } from "../../bookmarks/entities/bookmark.entity";
+import { Basket } from "../../basket/entities/basket.entity";
+import { OrderItem } from "../../orders/entities/rder-item.entity";
 
 @Entity({name:"products"})
 export class Product {
@@ -27,4 +29,8 @@ export class Product {
     categories:Category[]
     @OneToMany(()=>Bookmark, (bookmark)=>bookmark.product)
     bookMarks:Bookmark[]
+    @OneToMany(()=>Basket, (basket)=> basket.item)
+    baskets:Basket[]
+    @OneToMany(() => OrderItem, (item) => item.product)
+    orderItems: OrderItem[]
 }

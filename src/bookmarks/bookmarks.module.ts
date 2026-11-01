@@ -9,7 +9,7 @@ import { Product } from '../products/entities/product.entity';
 
 @Module({
   imports:[UsersModule, ProductsModule, TypeOrmModule.forFeature([Bookmark, Product])],
-  controllers: [],
+  controllers: [BookmarksController],
   providers: [BookmarksService],
 })
 export class BookmarksModule {}

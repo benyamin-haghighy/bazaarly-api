@@ -8,6 +8,9 @@ import { TicketsModule } from './tickets/tickets.module';
 import { ProductsModule } from './products/products.module';
 import { CategoryModule } from './category/category.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
+import { BasketModule } from './basket/basket.module';
+import { OrdersModule } from './orders/orders.module';
+import { DiscountCodeModule } from './discount-code/discount-code.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,7 +32,10 @@ import { BookmarksModule } from './bookmarks/bookmarks.module';
     TicketsModule,
     ProductsModule,
     CategoryModule,
-    BookmarksModule
+    BookmarksModule,
+    BasketModule,
+    OrdersModule,
+    DiscountCodeModule,
   ]
 })
 export class AppModule {}

@@ -5,6 +5,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
 import { Category } from '../category/entities/category.entity';
+import { JwtPayload } from '../tickets/interfaces/jwtpayload.interface';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class ProductsService {
@@ -12,7 +15,8 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository:Repository<Product>,
     @InjectRepository(Category)
-    private readonly categoryRepository:Repository<Category>
+    private readonly categoryRepository:Repository<Category>,
+    private readonly userService:UsersService
   ){}
   async create(createProductDto: CreateProductDto) {
     let newCategoies = []

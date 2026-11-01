@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique }
 import { User } from "../../users/entities/user.entity";
 import { Product } from "../../products/entities/product.entity";
 
-@Entity('bookMarks')
+@Entity({name:'bookmarks'})
 @Unique(['user_id', 'product_id'])
 export class Bookmark {
     @PrimaryGeneratedColumn()
