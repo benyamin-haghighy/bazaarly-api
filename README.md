@@ -16,7 +16,11 @@ I built it as a learning project and wanted it to behave like a real backend, so
 - **Discount codes**: generated on the server, percentage based, with an expiry time and a usage limit.
 - **Orders**: checkout from the basket. Stock is reserved when the order is created and given back if the order is cancelled.
 - **Payments**: start a payment with Zibal and confirm it on the callback.
+## Screenshots
 
+| Login | Register | Products |
+|:---:|:---:|:---:|
+| ![Login](./screenshots/login.png) | ![Register](./screenshots/register.png) | ![Products](./screenshots/products.png) |
 ## Tech stack
 
 | Area | Choice |
