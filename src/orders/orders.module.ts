@@ -16,5 +16,6 @@ import { DiscountCodeModule } from '../discount-code/discount-code.module';
   imports:[UsersModule,DiscountCodeModule,ProductsModule,AddressModule, BasketModule,TypeOrmModule.forFeature([Order, OrderItem,Basket, Product])],
   controllers: [OrdersController],
   providers: [OrdersService],
+  exports:[OrdersService]
 })
 export class OrdersModule {}

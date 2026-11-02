@@ -6,6 +6,8 @@ import { Address } from '../../address/entities/address.entity'
 import { OrderStatus } from '../enum/order-status.enum'
 import { OrderItem } from './rder-item.entity'
 import { DiscountCode } from '../../discount-code/entities/discount-code.entity'
+import { payment } from '../../payment/enums/payment.enum'
+import { Payment } from '../../payment/entities/payment.entity'
 
 @Entity('orders')
 export class Order {
@@ -48,4 +50,6 @@ export class Order {
   @ManyToOne(() => DiscountCode, (code) => code.orders, { onDelete: 'RESTRICT', nullable: true })
   @JoinColumn({ name: 'discount_code_id' })
   discount_code: DiscountCode | null
+  @OneToMany(()=>Payment, (pay)=>pay.order)
+  payments:Payment[]
 }

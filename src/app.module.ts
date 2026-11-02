@@ -11,6 +11,7 @@ import { BookmarksModule } from './bookmarks/bookmarks.module';
 import { BasketModule } from './basket/basket.module';
 import { OrdersModule } from './orders/orders.module';
 import { DiscountCodeModule } from './discount-code/discount-code.module';
+import { PaymentModule } from './payment/payment.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -36,6 +37,7 @@ import { DiscountCodeModule } from './discount-code/discount-code.module';
     BasketModule,
     OrdersModule,
     DiscountCodeModule,
+    PaymentModule,
   ]
 })
 export class AppModule {}

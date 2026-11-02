@@ -5,6 +5,8 @@ import { Ticket } from "../../tickets/entities/ticket.entity";
 import { Bookmark } from "../../bookmarks/entities/bookmark.entity";
 import { Basket } from "../../basket/entities/basket.entity";
 import { Order } from "../../orders/entities/order.entity";
+import { Payment } from "../../payment/entities/payment.entity";
+import roleFind from "../enums/roleFind.enum";
 
 @Entity({name:'users'})
 export class User {
@@ -14,10 +16,10 @@ export class User {
     name:string
     @Column({unique:true})
     mobile:string
-    @Column({nullable:true})
+    @Column({nullable:true, select:false})
     password:string
-    @Column({type:"enum", enum:role, default:role.USER})
-    role:role
+    @Column({type:"enum", enum:roleFind, default:roleFind.USER})
+    role:roleFind
     @CreateDateColumn()
     created_at:Date
     @UpdateDateColumn()
@@ -32,5 +34,6 @@ export class User {
     basket:Basket[]
     @OneToMany(() => Order, (order) => order.user)
     orders: Order[]
-
+    @OneToMany(()=>Payment, (pay)=>pay.user)
+    payments:Payment[]
 }

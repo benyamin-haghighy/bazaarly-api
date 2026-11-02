@@ -7,8 +7,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import role from '../enums/roleUser.enum.';
 import { Transform } from 'class-transformer';
+import roleFind from '../enums/roleFind.enum';
 
 
 export class CreateUserDto {
@@ -30,10 +30,10 @@ export class CreateUserDto {
   @Transform(({value})=>value.trim())
   password: string;
 
-  @IsOptional()
-  @IsEnum(role, {
-    message: `نقش باید یکی از این مقدارها باشد: ${Object.values(role).join('، ')}`,
-  })
-  @Transform(({value})=>value.trim())
-  role: role;
+  // @IsOptional()
+  // @IsEnum(roleFind, {
+  //   message: `نقش باید یکی از این مقدارها باشد: ${Object.values(roleFind).join('، ')}`,
+  // })
+  // @Transform(({value})=>value.trim())
+  // role: roleFind;
 }

@@ -21,6 +21,14 @@ export class OrdersController {
     return this.ordersService.findAll(req.user,status);
   }
   @UseGuards(AuthGuard('jwt'))
+  @Patch(':id/cancel')
+  cancel(
+  @Req() req: Request & { user: JwtPayload },
+  @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.ordersService.cancleOrder(id, req.user)
+  }
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   findOne(@Req() req:Request & {user:JwtPayload}, @Param('id', ParseIntPipe) id: number) {
     return this.ordersService.findOne(id,req.user);

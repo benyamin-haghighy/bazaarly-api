@@ -11,47 +11,49 @@ import { UsersService } from '../users/users.service';
 export class AddressService {
   constructor(
     @InjectRepository(Address)
-    private readonly addressRepository:Repository<Address>,
-    private readonly userService:UsersService
-  ){}
-  async create(createAddressDto: CreateAddressDto,user:JwtPayload):Promise<Address> {
-    const address = await this.addressRepository.create({...createAddressDto,user_id:user.sub})
+    private readonly addressRepository: Repository<Address>,
+    private readonly userService: UsersService
+  ) { }
+  async create(createAddressDto: CreateAddressDto, user: JwtPayload): Promise<Address> {
+    const address = await this.addressRepository.create({ ...createAddressDto, user_id: user.sub })
     return this.addressRepository.save(address)
   }
 
-  async findAll(user:JwtPayload):Promise<Address[]> {
+  async findAll(user: JwtPayload): Promise<Address[]> {
     try {
-      await this.userService.findOne(user.sub)
-      const addressers = await this.addressRepository.find({where:{user_id:user.sub},relations:{user:true},select:{
-        user:{
-          id:true,
-          name:true,
-          mobile:true,
-          role:true
+      await this.userService.findOne(user.sub, user)
+      const addressers = await this.addressRepository.find({
+        where: { user_id: user.sub }, relations: { user: true }, select: {
+          user: {
+            id: true,
+            name: true,
+            mobile: true,
+            role: true
+          }
         }
-      }})
+      })
       return addressers
     } catch (error) {
       throw error
     }
   }
-  
-  async findOne(id: number, user:JwtPayload):Promise<Address> {
+
+  async findOne(id: number, user: JwtPayload): Promise<Address> {
     try {
-      await this.userService.findOne(user.sub)
+      await this.userService.findOne(user.sub, user)
       const address = await this.addressRepository.findOne({
-          where:{
-            id
-          },
-          relations:{user:true},
-          select:{
-            user:{
-          id:true,
-          name:true,
-          mobile:true,
-          role:true
-        }
+        where: {
+          id
+        },
+        relations: { user: true },
+        select: {
+          user: {
+            id: true,
+            name: true,
+            mobile: true,
+            role: true
           }
+        }
       })
       if (!address) {
         throw new NotFoundException("ادرسی با این ایدی پیدا نشدش")
@@ -65,7 +67,7 @@ export class AddressService {
     }
   }
 
- async update(id: number, updateAddressDto: UpdateAddressDto, user:JwtPayload):Promise<string> {
+  async update(id: number, updateAddressDto: UpdateAddressDto, user: JwtPayload): Promise<string> {
     try {
       await this.findOne(id, user)
       const result = await this.addressRepository.update(id, updateAddressDto)
@@ -76,7 +78,7 @@ export class AddressService {
     }
   }
 
-  async remove(id: number, user:JwtPayload):Promise<string> {
+  async remove(id: number, user: JwtPayload): Promise<string> {
     try {
       await this.findOne(id, user)
       await this.addressRepository.delete(id)
@@ -84,5 +86,5 @@ export class AddressService {
     } catch (error) {
       throw error
     }
-}
+  }
 }

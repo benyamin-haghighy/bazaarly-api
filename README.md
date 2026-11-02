@@ -1,132 +1,220 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Bazaarly
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A REST API for an online store, built with NestJS, TypeORM and MySQL. It covers the usual shop flow end to end: accounts and roles, a product catalogue, a basket, discount codes, orders, and online payment through Zibal.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+I built it as a learning project and wanted it to behave like a real backend, so the parts that usually get skipped (stock handling, order cancellation, payment verification) are implemented rather than stubbed. The [known issues](#known-issues) section lists what is still rough.
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Auth**: register and login with a mobile number and password. Login returns an access token and a refresh token (JWT).
+- **Roles**: `USER` and `ADMIN`. Catalogue management and discount codes are admin-only.
+- **Catalogue**: products and categories (many-to-many).
+- **Addresses**: each user manages their own delivery addresses.
+- **Basket**: one row per product with a quantity.
+- **Bookmarks**: save products for later.
+- **Support tickets**: a ticket can have replies; users only see their own.
+- **Discount codes**: generated on the server, percentage based, with an expiry time and a usage limit.
+- **Orders**: checkout from the basket. Stock is reserved when the order is created and given back if the order is cancelled.
+- **Payments**: start a payment with Zibal and confirm it on the callback.
 
-## Project setup
+## Tech stack
 
-```bash
-$ npm install
-```
+| Area | Choice |
+| --- | --- |
+| Framework | NestJS (TypeScript) |
+| Database | MySQL with TypeORM |
+| Auth | Passport (JWT strategy), bcrypt |
+| Validation | class-validator, class-transformer |
+| HTTP client | axios (Zibal requests) |
+| Tests | Jest, plus a Postman collection for the API |
 
-## Compile and run the project
+Exact versions are in `package.json`.
 
-```bash
-# development
-$ npm run start
+## Getting started
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+You need Node.js 22 or newer (I develop on 24) and a running MySQL server.
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+git clone https://github.com/benyamin-haghighy/bazaarly-api.git
+cd bazaarly-api
+npm install
 ```
 
-## Deployment
+Create the database. TypeORM creates the tables on startup (`synchronize: true`) but not the database itself:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+```sql
+CREATE DATABASE shop;
+```
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Copy the example environment file and fill it in:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+cp .env.example .env
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Observability
-
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-To add it to this project, run this and approve the code it prints at [observe.nestjs.com/link](https://observe.nestjs.com/link) - signing up for free if you have no account:
+Start the server:
 
 ```bash
-$ npx @nestjs/observe link
+npm run start:dev
 ```
 
-It installs `@nestjs/observe`, wires it into `AppModule` and `main.ts`, and writes the app key and secret into `.env`, which every `nest start` script (`start`, `start:dev`, `start:debug`) then loads. In production, set `OBSERVE_APP_KEY` and `OBSERVE_APP_SECRET` in the environment instead.
+The API listens on `http://localhost:3000`.
 
-Or do it by hand:
+## Environment variables
+
+| Variable | Description |
+| --- | --- |
+| `PORT` | Port to listen on. Optional, defaults to `3000`. |
+| `DB_HOST`, `DB_PORT` | MySQL host and port. |
+| `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD` | Database name and credentials. |
+| `ACCESS_TOKEN_SECRETE_KEY` | Secret used to sign access tokens. The spelling matches the code. |
+| `ACCESS_TOKEN_EXPIRE` | Access token lifetime, for example `1h`. |
+| `REFRESH_TOKEN_SECRET` | Secret used to sign refresh tokens. |
+| `REFRESH_TOKEN_EXPIRES_IN` | Refresh token lifetime, for example `7d`. |
+| `MERCHANT` | Zibal merchant ID. `zibal` is Zibal's test merchant. |
+| `CALLBACK_URL` | URL Zibal sends the user back to after paying. It must be a valid URL that points at `GET /payment/verify`. |
+| `VERIFY_URL` | Zibal verify endpoint. |
+
+Use long random strings for both JWT secrets outside local development.
+
+## Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run start:dev` | Run with file watching. |
+| `npm run build` | Compile to `dist/`. |
+| `npm run start:prod` | Run the compiled build. |
+| `npm run lint` | Lint `src/` and `test/`. |
+| `npm test` | Run the Jest tests. |
+
+## Project structure
+
+```
+src/
+  auth/          register, login, JWT strategy
+  users/         user entity and user endpoints
+  address/       delivery addresses
+  category/      categories and the admin strategy
+  products/      products
+  basket/        basket items
+  bookmarks/     saved products
+  tickets/       support tickets and replies
+  discount-code/ discount codes
+  orders/        orders and order items
+  payment/       Zibal payment and callback
+  main.ts
+  app.module.ts
+```
+
+Each folder is a Nest module with its own controller, service, DTOs and entities.
+
+## API overview
+
+Protected routes expect `Authorization: Bearer <accessToken>`. "Admin" means the token must belong to a user with the `ADMIN` role.
+
+| Area | Endpoints | Access |
+| --- | --- | --- |
+| Auth | `POST /auth/register`, `GET /auth/login` | Public |
+| Users | `POST /users`, `GET /users`, `GET /users/role/:role`, `GET /users/:id`, `PATCH /users/:id`, `DELETE /users/:id` | Currently public (see known issues) |
+| Categories | `POST /category`, `GET /category`, `GET /category/:id`, `PATCH /category/:id`, `DELETE /category/:id` | Admin |
+| Products | `GET /products`, `GET /products/:id` | Public |
+| | `POST /products`, `PATCH /products/:id`, `DELETE /products/:id` | Admin |
+| Addresses | `POST /address`, `GET /address`, `GET /address/:id`, `PATCH /address/:id`, `DELETE /address/:id` | User |
+| Basket | `POST /basket`, `GET /basket`, `PATCH /basket/:id`, `DELETE /basket/:id` | User |
+| Bookmarks | `POST /bookmarks`, `GET /bookmarks`, `DELETE /bookmarks/:id` | User |
+| Tickets | `POST /tickets`, `GET /tickets`, `GET /tickets/:id`, `PATCH /tickets/:id`, `DELETE /tickets/:id` | User |
+| Discount codes | `POST /discount-codes/validate` | User |
+| | `POST /discount-codes`, `GET /discount-codes` | Admin |
+| Orders | `POST /orders`, `GET /orders/status/:status?`, `GET /orders/:id`, `PATCH /orders/:id/cancel`, `DELETE /orders/:id` | User |
+| | `PATCH /orders/:id` (change status) | Admin |
+| Payment | `POST /payment` | User |
+| | `GET /payment/verify` (Zibal callback) | Public |
+
+A few details worth knowing:
+
+- Login is a `GET` request that reads `mobile` and `password` from the JSON body.
+- The basket `PATCH` adds the given quantity to the current one; it does not replace it.
+- `GET /orders/status` lists every order. Add `/PENDING`, `/PAID` or `/CANCELED` to filter.
+- Responses are not uniform yet. Some modules wrap the result as `{ statusCode, data, message }`, others return the entity directly.
+- The product description field is spelled `descryption` in the API and database.
+
+### Examples
+
+Register:
 
 ```bash
-$ npm install @nestjs/observe
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Sara", "mobile": "09123456789", "password": "Passw0rd123"}'
 ```
 
-Then follow the [setup guide](https://docs.nestjs.com/observability/sdk) - it takes a single import and an app key.
+Login:
 
-The free plan needs no payment details and covers 300,000 events a month. You can also browse the [live demo](https://www.observe-demo.nestjs.com/dashboard) first - the whole dashboard over a busy service's data, with nothing to install.
+```bash
+curl -X GET http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"mobile": "09123456789", "password": "Passw0rd123"}'
+```
 
-## Resources
+Add to basket:
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+curl -X POST http://localhost:3000/basket \
+  -H "Authorization: Bearer <accessToken>" \
+  -H "Content-Type: application/json" \
+  -d '{"product_id": 1, "quantity": 2}'
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observe](https://observe.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Place an order with a discount code:
 
-## Support
+```bash
+curl -X POST http://localhost:3000/orders \
+  -H "Authorization: Bearer <accessToken>" \
+  -H "Content-Type: application/json" \
+  -d '{"address_id": 1, "discount_code_text": "A3F9C21B"}'
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## How checkout and payment work
 
-## Stay in touch
+1. The user fills the basket (`POST /basket`).
+2. `POST /orders` checks that the basket is not empty and that there is enough stock for every item. It adds up the total, applies the discount code if one was sent, and creates the order as `PENDING`. Each order item stores the unit price at that moment. Stock is reduced, the code is marked as used, and the basket is cleared.
+3. A user can only have one `PENDING` order at a time.
+4. `PATCH /orders/:id/cancel` cancels a `PENDING` order, puts the stock back and releases the discount code.
+5. `POST /payment` asks Zibal for a payment session and returns a `payment_url`. The user pays on that page.
+6. Zibal redirects the browser to `CALLBACK_URL` (`GET /payment/verify`) with `success` and `trackId`. The server does not trust those values. It calls Zibal's verify endpoint, then marks the payment `SUCCESS` and the order `PAID`. If the payment failed or was cancelled, the payment becomes `FAILED` and the order is cancelled.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+The order total is sent to Zibal as is, and Zibal expects amounts in rials. Store prices in rials, or convert before sending.
 
-## License
+Discount codes are created by an admin with `percent`, `valid_for_minutes` and an optional `usage_limit` (default 1). The server generates the code.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Testing the API
+
+`Bazaarly.postman_collection.json` walks through the whole API: sign-up, admin setup, catalogue, basket, bookmarks, tickets, discount codes, checkout, payment and cleanup.
+
+1. Start the server and make sure the database is reachable.
+2. In Postman, import the collection.
+3. Open the Collection Runner, select the collection, set the iterations to 1 and run it.
+
+Tokens and ids are stored in collection variables as the run goes, so nothing needs to be filled in by hand. Each run creates its own users with random mobile numbers, so you can run it repeatedly against the same database. The base URL is the `baseUrl` collection variable.
+
+The payment folder needs internet access and a valid `MERCHANT`. The collection simulates a cancelled payment through the callback. To test a successful payment, create an order, call `POST /payment`, open the returned `payment_url` in a browser and complete Zibal's test payment. Zibal will redirect you to `CALLBACK_URL`.
+
+Tests whose names end in `[known bug]` or `[known issue]` describe the behaviour the API should have and will fail until the matching issue below is fixed.
+
+Jest is set up, but the spec files are still the generated defaults.
+
+## Known issues
+
+- `POST /users` is public and accepts a `role`, so anyone can create an admin. The other `/users` routes are public too. They need guards.
+- `GET /users` and `GET /users/:id` return the password hash.
+- `PATCH /products/:id` only saves when `categories` is sent with at least one id, because of misplaced braces in the service.
+- `POST /payment` is missing its JWT guard, so `req.user` is undefined and the request fails.
+- `PATCH /orders/:id` looks the order up by the admin's own user id, so an admin cannot update other people's orders.
+- Order creation is not wrapped in a database transaction, and the stock check and the stock update are separate steps. Two simultaneous orders can oversell a product.
+- A refresh token is issued at login, but there is no endpoint that uses it.
+- Login should be a `POST`.
+- `synchronize: true` is on. Switch to migrations before deploying anywhere real.
+
+## Author
+
+Benyamin ([@benyamin-haghighy](https://github.com/benyamin-haghighy))
