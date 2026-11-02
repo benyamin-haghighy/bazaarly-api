@@ -17,16 +17,46 @@ export class UsersService {
     private readonly userRepository: Repository<User>
   ) { }
   async create(createUserDto: CreateUserDto): Promise<object> {
-    const isUser = await this.userRepository.findOne({ where: { mobile: createUserDto.mobile } })
+    const isUser = await this.userRepository.findOne({
+      where: { mobile: createUserDto.mobile }
+    });
+
     if (isUser) {
-      throw new BadRequestException('کاربری با این شماره تلفن قبلا ثیت نام کرده است')
+      throw new BadRequestException('کاربری با این شماره تلفن قبلاً ثبت‌نام کرده است');
     }
-    const hashPassword = await hash(createUserDto.password, 10)
-    createUserDto.password = hashPassword
-    // createUserDto.role = roleFind.USER
-    const user = this.userRepository.create(createUserDto)
-    const { password, ...userDetail } = await this.userRepository.save(user)
-    return userDetail
+
+    const hashPassword = await hash(createUserDto.password, 10);
+
+    const user = this.userRepository.create({
+      ...createUserDto,
+      password: hashPassword,
+      role: roleFind.USER
+    });
+
+    const { password, ...userDetail } = await this.userRepository.save(user);
+
+    return userDetail;
+  }
+  async createAdmin(createUserDto: CreateUserDto): Promise<object> {
+    const isUser = await this.userRepository.findOne({
+      where: { mobile: createUserDto.mobile }
+    });
+
+    if (isUser) {
+      throw new BadRequestException('کاربری با این شماره تلفن قبلاً ثبت‌نام کرده است');
+    }
+
+    const hashPassword = await hash(createUserDto.password, 10);
+
+    const admin = this.userRepository.create({
+      ...createUserDto,
+      password: hashPassword,
+      role: roleFind.ADMIN
+    });
+
+    const { password, ...adminDetail } = await this.userRepository.save(admin);
+
+    return adminDetail;
   }
   findAll(pageNation: pageNation): Promise<User[]> {
     return this.userRepository.find({

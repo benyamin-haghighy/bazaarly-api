@@ -4,8 +4,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import type { Response } from 'express';
 import roleFind from './enums/roleFind.enum';
-import role from './enums/roleUser.enum.';
-import { User } from './entities/user.entity';
 import { pageNation } from './dto/pageNation.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtPayload } from '../tickets/interfaces/jwtpayload.interface';
@@ -13,14 +11,17 @@ import { JwtPayload } from '../tickets/interfaces/jwtpayload.interface';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
-
-  @Post()
-  async create(@Res() res: Response, @Body() createUserDto: CreateUserDto): Promise<object> {
+  @UseGuards(AuthGuard('adminStrategy'))
+  @Post('admin')
+  async createAdmin(
+    @Res() res: Response,
+    @Body() createUserDto: CreateUserDto
+  ): Promise<object> {
     return res.status(HttpStatus.CREATED).json({
       statusCode: HttpStatus.CREATED,
-      data: await this.usersService.create(createUserDto),
-      message: "user create successFully"
-    })
+      data: await this.usersService.createAdmin(createUserDto),
+      message: 'admin created successfully'
+    });
   }
   @UseGuards(AuthGuard('adminStrategy'))
   @Get()
