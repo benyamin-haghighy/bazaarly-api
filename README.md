@@ -1,233 +1,287 @@
 # Bazaarly
 
-A REST API for an online store, built with NestJS, TypeORM and MySQL.  
-It covers the full shop flow: accounts & roles, product catalogue, basket, bookmarks, support tickets, discount codes, orders and online payment through Zibal.
+Bazaarly is a RESTful e-commerce API built with NestJS and TypeScript. It provides the backend functionality for an online store, including user authentication, product and category management, shopping baskets, bookmarks, orders, discount codes, and payment processing.
 
-This is a learning project that tries to behave like a real backend — stock reservation, order cancellation and payment verification are implemented (not just stubbed).
-
-## Features
-
-- **Auth**: Register and login with mobile number + password. Returns access token + refresh token (JWT).
-- **Roles**: `USER` and `ADMIN`. Catalogue management and discount codes are admin-only.
-- **Catalogue**: Products and categories (many-to-many).
-- **Addresses**: Each user manages their own delivery addresses.
-- **Basket**: One row per product with quantity.
-- **Bookmarks**: Save products for later.
-- **Support tickets**: Tickets can have replies; users only see their own.
-- **Discount codes**: Server-generated, percentage-based, with expiry time and usage limit.
-- **Orders**: Checkout from basket. Stock is reserved on order creation and restored on cancellation.
-- **Payments**: Start payment with Zibal and verify on callback.
+The project follows a modular structure and uses TypeORM with MySQL for data persistence.
 
 ## Screenshots
 
-| Login | Register | Products |
-|:---:|:---:|:---:|
-| ![Login](./screenshots/login.png) | ![Register](./screenshots/register.png) | ![Products](./screenshots/products.png) |
+### Login
+![Login](./screenshots/login.png)
 
-## Tech stack
+### Register
+![Register](./screenshots/register.png)
 
-| Area              | Choice                          |
-|-------------------|---------------------------------|
-| Framework         | NestJS (TypeScript)             |
-| Database          | MySQL + TypeORM                 |
-| Auth              | Passport (JWT strategy), bcrypt |
-| Validation        | class-validator, class-transformer |
-| HTTP client       | axios (for Zibal)               |
-| Linting           | oxlint                          |
-| Tests             | Jest + Postman collection       |
+### Products
+![Products](./screenshots/products.png)
 
-Exact versions are in `package.json`.
+## Features
 
-## Getting started
+- User registration and authentication
+- JWT-based authentication and role-based authorization
+- User management and admin account creation
+- Product and category management
+- Product bookmarking
+- Shopping basket management
+- Address management
+- Order creation and cancellation
+- Order status management
+- Discount code creation and validation
+- Payment integration with Zibal
+- Ticket management
+- Input validation and data transformation
+- Password hashing with bcrypt
+- MySQL database integration using TypeORM
 
-You need **Node.js 22+** (developed on 24) and a running MySQL server.
+## Tech Stack
+
+- **Runtime:** Node.js
+- **Framework:** NestJS
+- **Language:** TypeScript
+- **Database:** MySQL
+- **ORM:** TypeORM
+- **Authentication:** Passport, JWT
+- **Password Hashing:** bcrypt
+- **Validation:** class-validator, class-transformer
+- **Payment Gateway:** Zibal
+
+## Project Structure
+
+```text
+src/
+├── auth/
+│   ├── dto/
+│   ├── strategies/
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   └── auth.module.ts
+│
+├── users/
+├── products/
+├── category/
+├── address/
+├── basket/
+├── bookmarks/
+├── tickets/
+├── discount-code/
+├── orders/
+├── payment/
+│
+├── app.module.ts
+└── main.ts
+
+postman/
+└── Bazaarly-store.postman_collection.json
+
+screenshots/
+├── login.png
+├── register.png
+└── products.png
+
+.env.example
+```
+
+## Getting Started
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+- Node.js 22 or later
+- npm
+- MySQL
+
+### Installation
+
+1. Clone the repository:
 
 ```bash
 git clone https://github.com/benyamin-haghighy/bazaarly-api.git
+```
+
+2. Navigate to the project directory:
+
+```bash
 cd bazaarly-api
+```
+
+3. Install dependencies:
+
+```bash
 npm install
 ```
 
-Create the database (TypeORM creates tables on startup with `synchronize: true`, but not the database itself):
+4. Create a MySQL database:
 
 ```sql
 CREATE DATABASE shop;
 ```
 
-Copy the example environment file and fill it in:
+5. Create your environment file:
 
 ```bash
 cp .env.example .env
 ```
 
-Start the server:
+6. Configure the environment variables in `.env`.
+
+7. Start the development server:
 
 ```bash
 npm run start:dev
 ```
 
-The API listens on `http://localhost:3000`.
+The application will run on the port specified in your environment configuration.
 
-## Environment variables
+## Environment Variables
 
-| Variable                      | Description |
-|-------------------------------|-------------|
-| `PORT`                        | Port to listen on (default: `3000`) |
-| `DB_HOST`, `DB_PORT`          | MySQL host and port |
-| `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD` | Database name and credentials |
-| `ACCESS_TOKEN_SECRETE_KEY`    | Secret for access tokens (**spelling matches the code**) |
-| `ACCESS_TOKEN_EXPIRE`         | Access token lifetime (e.g. `1h`) |
-| `REFRESH_TOKEN_SECRET`        | Secret for refresh tokens |
-| `REFRESH_TOKEN_EXPIRES_IN`    | Refresh token lifetime (e.g. `7d`) |
-| `MERCHANT`                    | Zibal merchant ID (`zibal` is the test merchant) |
-| `CALLBACK_URL`                | URL Zibal redirects to after payment (must point to `GET /payment/verify`) |
-| `VERIFY_URL`                  | Zibal verify endpoint |
+The project uses environment variables for database configuration, authentication, and payment gateway settings.
 
-Use long random strings for both JWT secrets outside local development.
+| Variable | Description |
+|---|---|
+| `PORT` | Application port |
+| `DB_HOST` | MySQL host |
+| `DB_PORT` | MySQL port |
+| `DB_NAME` | Database name |
+| `DB_USERNAME` | Database username |
+| `DB_PASSWORD` | Database password |
+| `ACCESS_TOKEN_SECRETE_KEY` | Access token secret |
+| `ACCESS_TOKEN_EXPIRE` | Access token expiration |
+| `REFRESH_TOKEN_SECRET` | Refresh token secret |
+| `REFRESH_TOKEN_EXPIRES_IN` | Refresh token expiration |
+| `MERCHANT` | Zibal merchant identifier |
+| `CALLBACK_URL` | Payment callback URL |
+| `VERIFY_URL` | Payment verification endpoint |
 
-## Scripts
+## Authentication & Authorization
 
-| Command              | Description                     |
-|----------------------|---------------------------------|
-| `npm run start:dev`  | Run with file watching          |
-| `npm run build`      | Compile to `dist/`              |
-| `npm run start:prod` | Run the compiled build          |
-| `npm run lint`       | Lint `src/` and `test/`         |
-| `npm test`           | Run Jest tests                  |
+Authentication is implemented using Passport and JWT.
 
-## Project structure
+After registering and logging in, protected endpoints require an access token in the request header:
 
-```
-src/
-  auth/           register, login, JWT strategy
-  users/          user entity and user endpoints
-  address/        delivery addresses
-  category/       categories + admin strategy
-  products/       products
-  basket/         basket items
-  bookmarks/      saved products
-  tickets/        support tickets and replies
-  discount-code/  discount codes
-  orders/         orders and order items
-  payment/        Zibal payment and callback
-  main.ts
-  app.module.ts
+```http
+Authorization: Bearer YOUR_ACCESS_TOKEN
 ```
 
-Each folder is a Nest module with its own controller, service, DTOs and entities.
+The application uses role-based authorization to restrict administrative operations.
 
-## API overview
+### User Registration
 
-Protected routes expect `Authorization: Bearer <accessToken>`.  
-“Admin” means the token belongs to a user with the `ADMIN` role.
+Regular users can create an account through:
 
-| Area            | Endpoints                                                                 | Access      |
-|-----------------|---------------------------------------------------------------------------|-------------|
-| Auth            | `POST /auth/register`, `GET /auth/login`                                  | Public      |
-| Users           | `POST /users`                                                             | Public      |
-|                 | `GET /users`, `GET /users/role/:role`                                     | Admin       |
-|                 | `GET /users/:id`, `PATCH /users/:id`, `DELETE /users/:id`                 | Authenticated |
-| Categories      | `POST /category`, `GET /category`, `GET /category/:id`, `PATCH /category/:id`, `DELETE /category/:id` | Admin |
-| Products        | `GET /products`, `GET /products/:id`                                      | Public      |
-|                 | `POST /products`, `PATCH /products/:id`, `DELETE /products/:id`           | Admin       |
-| Addresses       | `POST /address`, `GET /address`, `GET /address/:id`, `PATCH /address/:id`, `DELETE /address/:id` | User |
-| Basket          | `POST /basket`, `GET /basket`, `PATCH /basket/:id`, `DELETE /basket/:id`  | User        |
-| Bookmarks       | `POST /bookmarks`, `GET /bookmarks`, `DELETE /bookmarks/:id`              | User        |
-| Tickets         | `POST /tickets`, `GET /tickets`, `GET /tickets/:id`, `PATCH /tickets/:id`, `DELETE /tickets/:id` | User |
-| Discount codes  | `POST /discount-codes/validate`                                           | User        |
-|                 | `POST /discount-codes`, `GET /discount-codes`                             | Admin       |
-| Orders          | `POST /orders`, `GET /orders/status/:status?`, `GET /orders/:id`, `PATCH /orders/:id/cancel`, `DELETE /orders/:id` | User |
-|                 | `PATCH /orders/:id` (change status)                                       | Admin       |
-| Payment         | `POST /payment`                                                           | User        |
-|                 | `GET /payment/verify` (Zibal callback)                                    | Public      |
-
-### Important notes
-
-- Login is currently a **GET** request that reads `mobile` and `password` from the JSON body.
-- Basket `PATCH` **adds** the given quantity to the existing one (it does not replace it).
-- `GET /orders/status` returns all orders of the user. Append `/PENDING`, `/PAID` or `/CANCELED` to filter.
-- Response format is not fully consistent yet. Some modules return `{ statusCode, data, message }`, others return the entity directly.
-- The product description field is spelled `descryption` in both the API and the database.
-
-### Examples
-
-**Register**
-```bash
-curl -X POST http://localhost:3000/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Sara", "mobile": "09123456789", "password": "Passw0rd123"}'
+```http
+POST /auth/register
 ```
 
-**Login**
-```bash
-curl -X GET http://localhost:3000/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"mobile": "09123456789", "password": "Passw0rd123"}'
+Registration assigns the `USER` role automatically.
+
+### Admin Account Setup
+
+The admin creation endpoint is protected, so the first administrator must be created manually.
+
+After registering a regular account, update its role directly in the database:
+
+```sql
+UPDATE users
+SET role = 'ADMIN'
+WHERE mobile = 'YOUR_MOBILE_NUMBER';
 ```
 
-**Add to basket**
-```bash
-curl -X POST http://localhost:3000/basket \
-  -H "Authorization: Bearer <accessToken>" \
-  -H "Content-Type: application/json" \
-  -d '{"product_id": 1, "quantity": 2}'
+Once an administrator exists, additional admin accounts can be created through:
+
+```http
+POST /users/admin
 ```
 
-**Place an order with discount code**
-```bash
-curl -X POST http://localhost:3000/orders \
-  -H "Authorization: Bearer <accessToken>" \
-  -H "Content-Type: application/json" \
-  -d '{"address_id": 1, "discount_code_text": "A3F9C21B"}'
-```
+This endpoint is restricted to administrators.
 
-## How checkout and payment work
+## API Overview
 
-1. User fills the basket (`POST /basket`).
-2. `POST /orders` checks that the basket is not empty and that enough stock exists for every item.  
-   It calculates the total, applies the discount code (if provided), creates the order as `PENDING`, stores the unit price of each item, reduces stock, marks the code as used and clears the basket.
-3. A user can have only **one** `PENDING` order at a time.
-4. `PATCH /orders/:id/cancel` cancels a `PENDING` order, restores stock and releases the discount code.
-5. `POST /payment` requests a payment session from Zibal and returns a `payment_url`. The user pays on that page.
-6. Zibal redirects the browser to `CALLBACK_URL` (`GET /payment/verify`) with `success` and `trackId`.  
-   The server does **not** trust these values — it calls Zibal’s verify endpoint, then marks the payment as `SUCCESS` and the order as `PAID`. On failure/cancellation the payment becomes `FAILED` and the order is cancelled.
+The following table summarizes the main API modules and their responsibilities.
 
-> Zibal expects amounts in **rials**. Store prices in rials or convert before sending.
+| Module | Description |
+|---|---|
+| Auth | User registration and login |
+| Users | User information and account management |
+| Products | Product management |
+| Category | Product category management |
+| Address | User address management |
+| Basket | Shopping basket operations |
+| Bookmarks | Saved products |
+| Tickets | User support tickets |
+| Discount Code | Discount creation and validation |
+| Orders | Order creation, retrieval, and cancellation |
+| Payment | Payment requests and verification |
 
-Discount codes are created by an admin with `percent`, `valid_for_minutes` and an optional `usage_limit` (default `1`). The server generates the actual code string.
+### Access Control
 
-## Testing the API
+The API uses authentication and role-based authorization to protect resources.
 
-The Postman collection is located at:
+| Module | Access |
+|---|---|
+| Auth | Public |
+| Users | Authenticated users / Admin |
+| Products | Public read / Admin management |
+| Category | Admin |
+| Address | Authenticated users |
+| Basket | Authenticated users |
+| Bookmarks | Authenticated users |
+| Tickets | Authenticated users |
+| Discount Code | Authenticated validation / Admin management |
+| Orders | Authenticated users / Admin |
+| Payment | Authenticated payment requests |
 
-```
+## Order & Payment Flow
+
+The order module handles the main purchasing process.
+
+When a user creates an order, the application checks the user's basket, address, product availability, and discount code before creating the order.
+
+The order process includes:
+
+1. Checking the user's pending orders.
+2. Validating the selected address.
+3. Checking basket contents.
+4. Verifying product stock.
+5. Validating the discount code, if provided.
+6. Creating the order and its items.
+7. Updating product stock.
+8. Clearing the user's basket.
+
+Users can cancel pending orders. When an eligible order is canceled, the related product stock and discount usage are restored.
+
+The payment module integrates with **Zibal** and handles payment requests and verification through the configured callback endpoint.
+
+## Postman Collection
+
+A Postman collection is included in the repository for testing the API endpoints.
+
+```text
 postman/Bazaarly-store.postman_collection.json
 ```
 
-It walks through the whole flow: sign-up, admin setup, catalogue, basket, bookmarks, tickets, discount codes, checkout, payment and cleanup.
+Import the collection into Postman and configure the required environment variables and authentication token before testing protected endpoints.
 
-1. Start the server and make sure the database is reachable.
-2. Import the collection into Postman.
-3. Open Collection Runner → select the collection → set iterations to 1 → Run.
+## Available Scripts
 
-Tokens and IDs are stored in collection variables automatically. Each run creates users with random mobile numbers, so you can run it repeatedly against the same database. The base URL is controlled by the `baseUrl` collection variable.
+```bash
+# Start in development mode
+npm run start:dev
 
-The payment folder needs internet access and a valid `MERCHANT`. The collection simulates a cancelled payment via the callback. To test a successful payment, create an order, call `POST /payment`, open the returned `payment_url` in a browser and complete Zibal’s test payment.
+# Start in production mode
+npm run start:prod
 
-Jest is configured, but the current spec files are still the generated defaults.
-
-## Known issues
-
-- `POST /users` is public and accepts a `role` field → anyone can create an admin account.
-- `GET /users` and `GET /users/:id` still return the password hash.
-- `PATCH /products/:id` only saves when `categories` is sent with at least one id (misplaced braces in the service).
-- Order creation is **not** wrapped in a database transaction. Stock check and stock update are separate steps → concurrent orders can oversell a product.
-- A refresh token is issued at login, but there is currently **no** endpoint that uses it.
-- Login should ideally be a `POST` request.
-- `synchronize: true` is enabled. Switch to migrations before any real deployment.
-- Some response messages and error texts are in Persian / mixed language.
+# Build the project
+npm run build
+```
 
 ## Author
 
-Benyamin ([@benyamin-haghighy](https://github.com/benyamin-haghighy))
-```
+**Benyamin Haghighi**
+
+GitHub: [benyamin-haghighy](https://github.com/benyamin-haghighy)
+
+## Contact
+
+- **GitHub:** [benyamin-haghighy](https://github.com/benyamin-haghighy)
+- **Email:** [bngh2003@gmail.com](mailto:bngh2003@gmail.com)
