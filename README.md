@@ -6,14 +6,18 @@ The project follows a modular structure and uses TypeORM with MySQL for data per
 
 ## Screenshots
 
-### Login
-![Login](./screenshots/login.png)
-
-### Register
-![Register](./screenshots/register.png)
-
-### Products
-![Products](./screenshots/products.png)
+<table>
+  <tr>
+    <td align="center"><strong>Login</strong></td>
+    <td align="center"><strong>Register</strong></td>
+    <td align="center"><strong>Products</strong></td>
+  </tr>
+  <tr>
+    <td><img src="./screenshots/login.png" width="250" alt="Login"></td>
+    <td><img src="./screenshots/register.png" width="250" alt="Register"></td>
+    <td><img src="./screenshots/products.png" width="250" alt="Products"></td>
+  </tr>
+</table>
 
 ## Features
 
